@@ -52,6 +52,16 @@ def start_job(video_file, overlays_payload=None):
     """Launch the video processing worker and stream annotated frames."""
     try:
         source_path = _resolve_video_path(video_file)
+
+        # Detect if we are using a previously annotated "preview" file
+        # and switch to the original clean video if available.
+        if source_path.name.endswith("_detected.mp4"):
+            original_name = source_path.name.replace("_detected.mp4", ".mp4")
+            original_path = source_path.with_name(original_name)
+            if original_path.exists():
+                print(f"Switching from {source_path.name} to original {original_path.name}")
+                source_path = original_path
+
         _wait_for_file_ready(source_path)
     except Exception as exc:
         message = f"Error preparing video: {exc}"

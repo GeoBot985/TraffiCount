@@ -321,12 +321,12 @@ def process_video(video_path, frame_callback, stop_event, overlay_lines=None):
         annotated_detections: List[Detection] = []
         for track in tracks.values():
             label = f"{track.label}#{track.track_id}"
-            expanded_box = expand_box(track.box, BOX_EXPANSION_RATIO, frame_rgb.shape[:2])
+            # Use the actual tracked box without expansion for display
             annotated_detections.append(
                 Detection(
                     label=label,
                     confidence=track.confidence,
-                    box=expanded_box,
+                    box=track.box,
                     class_id=track.class_id,
                 )
             )
