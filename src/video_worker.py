@@ -142,6 +142,35 @@ def _rename_capture(
     return new_path
 
 
+def _suppress_duplicates(detections: List[Detection]) -> List[Detection]:
+    """
+    Suppress low-confidence detections that overlap significantly with higher-confidence
+    detections. This handles cases where the detector outputs two boxes for the same
+    vehicle (e.g. one 'light vehicle' and one 'truck', or two 'light vehicles'),
+    where one is lower confidence (typically < 0.6, appearing blue).
+    """
+    if not detections:
+        return []
+
+    # Sort by confidence descending so we keep the best ones
+    sorted_dets = sorted(detections, key=lambda d: d.confidence, reverse=True)
+    kept: List[Detection] = []
+
+    for det in sorted_dets:
+        suppress = False
+        # If this detection is low confidence (< 0.6), check if it overlaps
+        # with any already accepted higher-confidence detection.
+        if det.confidence < 0.6:
+            for kept_det in kept:
+                if compute_iou(det.box, kept_det.box) > 0.3:
+                    suppress = True
+                    break
+        if not suppress:
+            kept.append(det)
+
+    return kept
+
+
 def process_video(video_path, frame_callback, stop_event, overlay_lines=None):
     """
     Run YOLO on every frame, track objects across frames, detect line crossings,
