@@ -118,13 +118,13 @@ def render_overlay_preview(
         _draw_label(drawing, line, color)
 
     if pending_points:
-        normalized = [_coerce_point(point) for point in pending_points[-2:]]
+        normalized = [_coerce_point(point) for point in pending_points]
         if len(normalized) == 1:
             _draw_pending_point(drawing, normalized[0])
-        elif len(normalized) == 2:
+        elif len(normalized) >= 2:
             drawing.line(normalized, fill="#FFFFFF", width=2, joint="curve")
-            _draw_pending_point(drawing, normalized[0])
-            _draw_pending_point(drawing, normalized[1])
+            for point in normalized:
+                _draw_pending_point(drawing, point)
 
     return np.array(image)
 

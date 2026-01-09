@@ -33,7 +33,7 @@ def handle_point_selection(evt: gr.SelectData, overlays_payload, pending_points,
 
     message = f"Point {len(points)} selected at ({x}, {y})."
     updated_image = _render_preview(current_image, overlays_payload, points)
-    return points[:2], updated_image, gr.update(), message
+    return points, updated_image, gr.update(), message
 
 
 def save_line(line_name: str, overlays_payload, pending_points, current_image):
@@ -45,7 +45,12 @@ def save_line(line_name: str, overlays_payload, pending_points, current_image):
 
     manager = OverlayManager.from_payload(overlays_payload or [])
     try:
-        manager.add_line(line_name, pending_points[:2])
+        if len(pending_points) == 2:
+            manager.add_line(line_name, pending_points)
+        else:
+            for i in range(len(pending_points) - 1):
+                segment_name = f"{line_name}_{i+1}"
+                manager.add_line(segment_name, [pending_points[i], pending_points[i+1]])
     except ValueError as exc:
         return overlays_payload, pending_points, current_image, gr.update(), str(exc)
 
