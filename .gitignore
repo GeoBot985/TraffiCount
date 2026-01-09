@@ -1,17 +1,19 @@
-# Python virtual environments
+# --- Python virtual environment ---
 .venv/
 venv/
 env/
-data/
 
-# Python cache
+# --- Python cache/bytecode ---
 __pycache__/
 *.pyc
 *.pyo
 
-# VS Code
+# --- VS Code ---
 .vscode/
 
-# OS junk
+# --- OS junk ---
 .DS_Store
 Thumbs.db
+src/api_key.txt
+data/models/yolo11s.onnx
+data/models/yolo11s.pt
